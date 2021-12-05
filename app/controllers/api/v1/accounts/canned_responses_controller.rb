@@ -31,15 +31,15 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
     params.require(:canned_response).permit(:short_code, :content)
   end
 
-  def template_variables(contact: {})
+  def template_variables(contact:)
     contact_data = {
       name: contact.name,
       email: contact.email,
-      phone: contact.phone
+      phone: contact.phone_number
     }.merge(contact.custom_attributes)
     variables = {}
     contact_data.each_key do |key|
-      variables["ticket.requester.#{key}"] = contact_data[key]
+      variables["requester_#{key}"] = contact_data[key]
     end
     variables
   end
@@ -55,7 +55,7 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
         # ticket.requester -> name, email, phone ...custom_attributes
         responses = responses.map do |response|
           template = Liquid::Template.parse(response.content)
-          response.content = template.render(template_variables(conversation.contact))
+          response.content = template.render(template_variables(contact: conversation.contact))
           response
         end
       end
