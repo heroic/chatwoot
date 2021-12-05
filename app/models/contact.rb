@@ -138,6 +138,20 @@ class Contact < ApplicationRecord
     ).or(Current.account.contacts.where.not(identifier: [nil, '']))
   end
 
+  def fetch_contact_external_details
+    return unless custom_attributes.nil? || custom_attributes.external_id.nil?
+
+    user_id = galaxycard_user_id
+    # here we use the contact's email/phone to find the customer in thor
+    # we save the user's thor id, and missing detail such as phone/email. this makes it easier to link with other details of the user
+    unless user_id.nil?
+      custom_attributes ||= {}
+      custom_attributes.external_id = user_id
+      assign_contact_details user_id
+    end
+    save
+  end
+
   private
 
   def galaxycard_user_id_from_contact(body)
@@ -163,20 +177,6 @@ class Contact < ApplicationRecord
     user = galaxycard_user_details id
     phone ||= user[:phone]
     email ||= user[:email]
-  end
-
-  def fetch_contact_external_details
-    return unless custom_attributes.nil? || custom_attributes.external_id.nil?
-
-    user_id = galaxycard_user_id
-    # here we use the contact's email/phone to find the customer in thor
-    # we save the user's thor id, and missing detail such as phone/email. this makes it easier to link with other details of the user
-    unless user_id.nil?
-      custom_attributes ||= {}
-      custom_attributes.external_id = user_id
-      assign_contact_details user_id
-    end
-    save
   end
 
   def ip_lookup
