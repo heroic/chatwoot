@@ -140,6 +140,45 @@ class Contact < ApplicationRecord
 
   private
 
+  def galaxycard_user_id_from_contact(body)
+    response = HTTParty.post("http://thor.#{ENV['NAMESPACE']}/v1/users/findBy", body: body)
+    return JSON.parse(response.body)[0] if response.code == 200
+  end
+
+  def galaxycard_user_id
+    user_id = nil
+    user_id = galaxycard_user_id_from_contact(phone: phone.last(10)) if phone
+    user_id = galaxycard_user_id_from_contact(email: email) if user_id.nil? && email
+    user_id
+  end
+
+  def galaxycard_user_details(id)
+    response = HTTParty.get("http://thor.#{ENV['NAMESPACE']}/v1/users/#{id}")
+    return JSON.parse(response.body) if response.code == 200
+  end
+
+  def assign_contact_details(id)
+    return unless phone.nil? || email.nil?
+
+    user = galaxycard_user_details id
+    phone ||= user[:phone]
+    email ||= user[:email]
+  end
+
+  def fetch_contact_external_details
+    return unless custom_attributes.nil? || custom_attributes.external_id.nil?
+
+    user_id = galaxycard_user_id
+    # here we use the contact's email/phone to find the customer in thor
+    # we save the user's thor id, and missing detail such as phone/email. this makes it easier to link with other details of the user
+    unless user_id.nil?
+      custom_attributes ||= {}
+      custom_attributes.external_id = user_id
+      assign_contact_details user_id
+    end
+    save
+  end
+
   def ip_lookup
     return unless account.feature_enabled?('ip_lookup')
 
