@@ -145,8 +145,8 @@ class Contact < ApplicationRecord
     # here we use the contact's email/phone to find the customer in thor
     # we save the user's thor id, and missing detail such as phone/email. this makes it easier to link with other details of the user
     unless user_id.nil?
-      custom_attributes ||= {}
-      custom_attributes[:external_id] = user_id
+      self.custom_attributes ||= {}
+      self.custom_attributes[:external_id] = user_id
       assign_contact_details user_id
     end
     save
