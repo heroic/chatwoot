@@ -156,7 +156,10 @@ class Contact < ApplicationRecord
 
   def galaxycard_user_id_from_contact(body)
     response = HTTParty.post("http://thor.#{ENV['NAMESPACE']}/v1/users/findBy", body: body)
-    return JSON.parse(response.body)[0] if response.code == 200
+    return unless response.code == 200
+
+    user = JSON.parse(response.body)[0]
+    user['id'] unless user.nil?
   end
 
   def galaxycard_user_id
@@ -175,8 +178,10 @@ class Contact < ApplicationRecord
     return unless phone_number.nil? || email.nil?
 
     user = galaxycard_user_details id
-    self.phone_number ||= user[:phone]
-    self.email ||= user[:email]
+    return if user.nil?
+
+    self.phone_number ||= user['phone'].to_s.length == 10 ? "+91#{user['phone']}" : user['phone']
+    self.email ||= user['email']
   end
 
   def ip_lookup

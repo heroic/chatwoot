@@ -47,7 +47,7 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   def canned_responses
     responses = Current.account.canned_responses
     responses = responses.where('short_code ILIKE ?', "#{params[:search]}%") if params[:search]
-    if params[:coversation_id]
+    if params[:conversation_id]
       conversation = Current.account.conversations.find(params[:conversation_id])
       if conversation
         # we need to templatize the canned responses
