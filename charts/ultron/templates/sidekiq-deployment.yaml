@@ -58,6 +58,10 @@ spec:
         env:
         - name: FRONTEND_URL
           value: https://{{ .Values.service.name }}{{ .Values.jxRequirements.ingress.namespaceSubDomain }}{{ .Values.jxRequirements.ingress.domain }}
+        - name: APP_NAME
+          value: {{ .Chart.Name }}
+        - name: NAMESPACE
+          value: {{ .Release.Namespace }}
 {{- range $pkey, $pval := .Values.env }}
         - name: {{ $pkey }}
           value: {{ quote $pval }}
