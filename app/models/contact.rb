@@ -161,8 +161,8 @@ class Contact < ApplicationRecord
 
   def galaxycard_user_id
     user_id = nil
-    user_id = galaxycard_user_id_from_contact(phone: phone.last(10)) if phone
-    user_id = galaxycard_user_id_from_contact(email: email) if user_id.nil? && email
+    user_id = galaxycard_user_id_from_contact(phone: phone_number.last(10)) if phone_number.present?
+    user_id = galaxycard_user_id_from_contact(email: email) if user_id.nil? && email.present?
     user_id
   end
 
@@ -172,10 +172,10 @@ class Contact < ApplicationRecord
   end
 
   def assign_contact_details(id)
-    return unless phone.nil? || email.nil?
+    return unless phone_number.nil? || email.nil?
 
     user = galaxycard_user_details id
-    self.phone ||= user[:phone]
+    self.phone_number ||= user[:phone]
     self.email ||= user[:email]
   end
 
