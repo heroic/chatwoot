@@ -11,9 +11,6 @@ spec:
       taskSpec:
         metadata: {}
         stepTemplate:
-          env:
-          - name: DOCKERFILE_PATH
-            value: docker/Dockerfile
           image: uses:jenkins-x/jx3-pipeline-catalog/tasks/ruby/pullrequest.yaml@versionStream
           name: ""
           resources:
