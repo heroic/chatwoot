@@ -11,9 +11,9 @@ class AgentBotJob < ApplicationJob
     return message.conversation.update(status: :open) if bot_response.nil? || bot_response == 'human_handoff'
 
     agent_bot = AgentBot.find(agent_bot_id)
-    mb = Messages::MessageBuilder.new(agent_bot, message.conversation, {
+    mb = Messages::MessageBuilder.new(agent_bot, message.conversation, ActionController::Parameters.new({
                                         content: bot_response
-                                      })
+                                      }))
     mb.perform
   end
 
