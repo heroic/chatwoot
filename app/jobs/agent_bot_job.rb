@@ -20,9 +20,11 @@ class AgentBotJob < ApplicationJob
   private
 
   def get_bot_response(message)
-    response = Webhooks::Trigger.execute(ENV['RASA_URL'], {
-                                           sender: message.conversation_id,
-                                           message: message.content
+    response = HTTParty.post(ENV['RASA_URL'], {
+                                           body: {
+                                             sender: message.conversation_id,
+                                             message: message.content
+                                           }.to_json
                                          })
 
     return unless response.code == 200
