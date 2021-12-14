@@ -1,8 +1,11 @@
 apiVersion: v1
 data:
-  sidekiq-healthcheck: |-
-    #!/bin/sh
-    if [ $(ps -x | grep sidekiq | grep busy | wc -l) -ne  1 ]; then exit 1; fi
+  sidekiq-healthcheck.rb: |-
+    #!/usr/local/bin/ruby
+    require 'sidekiq/api'
+    Sidekiq::Workers.new.each do |process_id, thread_id, work|
+      exit 1 if work['run_at'] < Time.now.to_i - 2.minutes.to_i
+    end
   sidekiq-safe-stop: |-
     #!/bin/sh
     kill -SIGTSTP $(ps -x | grep sidekiq | grep busy | awk '{ print $1 }')
