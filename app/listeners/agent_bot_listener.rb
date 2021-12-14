@@ -27,7 +27,7 @@ class AgentBotListener < BaseListener
     message = extract_message_and_account(event)[0]
     return unless message.webhook_sendable?
     return unless message.incoming?
-    
+
     AgentBotJob.perform_later(message.inbox.agent_bot_inbox.agent_bot_id, message.id)
   end
 
