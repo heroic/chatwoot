@@ -71,7 +71,7 @@ spec:
         livenessProbe:
           exec:
             command:
-            - /scripts/sidekiq-healthcheck
+            - bundle exec /scripts/sidekiq-healthcheck
           initialDelaySeconds: {{ .Values.sidekiq.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sidekiq.livenessProbe.periodSeconds }}
           successThreshold: {{ .Values.sidekiq.livenessProbe.successThreshold }}
@@ -79,7 +79,7 @@ spec:
         readinessProbe:
           exec:
             command:
-            - /scripts/sidekiq-healthcheck
+            - bundle exec /scripts/sidekiq-healthcheck
           periodSeconds: {{ .Values.sidekiq.readinessProbe.periodSeconds }}
           successThreshold: {{ .Values.sidekiq.readinessProbe.successThreshold }}
           timeoutSeconds: {{ .Values.sidekiq.readinessProbe.timeoutSeconds }}
